@@ -4,17 +4,28 @@ services:
     image: percona/percona-server:8.0
     container_name: mysql-percona
     environment:
-      MYSQL_ROOT_PASSWORD=root
+      MYSQL_DATABASE: mydb
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306"
     volumes:
       - /local/datadir:/var/lib/mysql
   app1:
     build: ./app1
     ports:
     - "5001:5000"
+    links:
+      - mysql_db
+    environment:
+      DB_URL: mysql://admin:admin@mysql-percona:3306/mydb
   app2:
     build: ./app2
     ports:
     - "5002:5000"
+    links:
+      - mysql_db
+    environment:
+      DB_URL: mysql://admin:admin@mysql-percona:3306/mydb
   nginx:
     build: ./nginx
     ports:
